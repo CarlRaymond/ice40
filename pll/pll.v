@@ -1,17 +1,16 @@
 module top(input clk, output D1, output D2, output D3, output D4, output D5);
    
     wire clk;
-
-    wire clk_high;
+    wire clk_fast;
+    wire clk_scaler1;
+    wire clk_scaler2;
     wire BYPASS;
     wire RESETB;
 
     reg[3:0] spinner1;
     reg[3:0] spinner2;
     reg[3:0] out;
-
     reg ready = 0;
-
 
     SB_PLL40_CORE #(
         .FEEDBACK_PATH("PHASE_AND_DELAY"),
@@ -27,7 +26,7 @@ module top(input clk, output D1, output D2, output D3, output D4, output D5);
         .FILTER_RANGE(3'b001),
     ) uut (
         .REFERENCECLK   (clk),
-        .PLLOUTGLOBAL   (clk_high), // output frequency = 3 * input frequency
+        .PLLOUTGLOBAL   (clk_fast), // output frequency = 7 * input frequency
         .BYPASS         (BYPASS),
         .RESETB         (RESETB)
         //.LOCK (LOCK )
@@ -37,16 +36,14 @@ module top(input clk, output D1, output D2, output D3, output D4, output D5);
     assign BYPASS = 0;
     assign RESETB = 1;
 
-  
-
     scaler scaler1(
       .clk_in (clk),
-      .clk_out (clk_scaler1),
+      .clk_out (clk_scaler1)
     );
 
     scaler scaler2(
-      .clk_in (clk_high),
-      .clk_out (clk_scaler2),
+      .clk_in  (clk_fast),
+      .clk_out (clk_scaler2)
     );
 
     always @(posedge clk_scaler1) begin
@@ -64,7 +61,7 @@ module top(input clk, output D1, output D2, output D3, output D4, output D5);
         end
       else
         begin
-          spinner1 <= 4'b0001;
+          spinner1 <= 4'b0101;
           spinner2 <= 4'b0101;
           ready <= 1;
         end
@@ -76,9 +73,9 @@ module top(input clk, output D1, output D2, output D3, output D4, output D5);
       end
     end
 
-    assign D1 = spinner1[0];
-    assign D2 = spinner1[1];
-    assign D3 = spinner1[2];
-    assign D4 = spinner1[3];
+    assign D1 = out[0];
+    assign D2 = out[1];
+    assign D3 = out[2];
+    assign D4 = out[3];
     assign D5 = 1;
 endmodule // top
