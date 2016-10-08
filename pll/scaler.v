@@ -7,7 +7,7 @@ module scaler (input clk_in, output clk_out);
 	always @(posedge clk_in) begin
     if (ready) 
         begin
-           if (counter == 12000000) 
+           if (counter == 6000000) 
              begin
                 counter <= 0;
                 clk_out = ~clk_out;

@@ -7,8 +7,8 @@ module top(input clk, output D1, output D2, output D3, output D4, output D5);
     wire BYPASS;
     wire RESETB;
 
-    reg[3:0] spinner1;
-    reg[3:0] spinner2;
+    reg[3:0] spinner1 = 4'b0001;
+    reg[3:0] spinner2 = 4'b0100;
     reg[3:0] out;
     reg ready = 0;
 
@@ -21,12 +21,12 @@ module top(input clk, output D1, output D2, output D3, output D4, output D5);
         .FDA_FEEDBACK(4'b0000),
         .FDA_RELATIVE(4'b0000),
         .DIVR(4'b0000),
-        .DIVF(7'd7), // frecuency multiplier = 6+1 = 7
+        .DIVF(7'd4), // frecuency multiplier = 4+1 = 5
         .DIVQ(3'd3),
         .FILTER_RANGE(3'b001),
-    ) uut (
+    ) pll (
         .REFERENCECLK   (clk),
-        .PLLOUTGLOBAL   (clk_fast), // output frequency = 7 * input frequency
+        .PLLOUTGLOBAL   (clk_fast),
         .BYPASS         (BYPASS),
         .RESETB         (RESETB)
         //.LOCK (LOCK )
@@ -53,25 +53,14 @@ module top(input clk, output D1, output D2, output D3, output D4, output D5);
     always @(posedge clk_scaler2) begin
       spinner2 <= { spinner2[0], spinner2[3:1] };
     end
-    
-    always @(posedge clk) begin
-      if (ready)
-        begin
-          out <= spinner1;
-        end
-      else
-        begin
-          spinner1 <= 4'b0101;
-          spinner2 <= 4'b0101;
-          ready <= 1;
-        end
-    end
 
-    always @(negedge clk) begin
-      if (ready) begin
-        out <= spinner2;
+    always @(*) begin
+      if (clk) begin
+        out = spinner1;
+      end else begin
+        out = spinner2;
       end
-    end
+    end    
 
     assign D1 = out[0];
     assign D2 = out[1];
