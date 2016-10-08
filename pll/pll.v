@@ -7,11 +7,11 @@ module top(input clk, output D1, output D2, output D3, output D4, output D5);
     wire BYPASS;
     wire RESETB;
 
+    reg ready = 0;
     reg[3:0] spinner1 = 4'b0001;
     reg[3:0] spinner2 = 4'b0100;
-    reg[3:0] out;
-    reg ready = 0;
-
+    wire[3:0] out;
+    
     SB_PLL40_CORE #(
         .FEEDBACK_PATH("PHASE_AND_DELAY"),
         .DELAY_ADJUSTMENT_MODE_FEEDBACK("FIXED"),
@@ -36,12 +36,12 @@ module top(input clk, output D1, output D2, output D3, output D4, output D5);
     assign BYPASS = 0;
     assign RESETB = 1;
 
-    scaler scaler1(
+    scaler #(.N(3000000)) scaler1(
       .clk_in (clk),
       .clk_out (clk_scaler1)
     );
 
-    scaler scaler2(
+    scaler #(.N(3000000)) scaler2(
       .clk_in  (clk_fast),
       .clk_out (clk_scaler2)
     );
@@ -54,17 +54,10 @@ module top(input clk, output D1, output D2, output D3, output D4, output D5);
       spinner2 <= { spinner2[0], spinner2[3:1] };
     end
 
-    always @(*) begin
-      if (clk) begin
-        out = spinner1;
-      end else begin
-        out = spinner2;
-      end
-    end    
-
-    assign D1 = out[0];
-    assign D2 = out[1];
-    assign D3 = out[2];
-    assign D4 = out[3];
+    assign D1 = (clk & spinner1[0]) | (!clk & spinner2[0]);
+    assign D2 = (clk & spinner1[1]) | (!clk & spinner2[1]);
+    assign D3 = (clk & spinner1[2]) | (!clk & spinner2[2]);
+    assign D4 = (clk & spinner1[3]) | (!clk & spinner2[3]);
+    
     assign D5 = 1;
 endmodule // top
