@@ -1,12 +1,15 @@
 # Project setup
-PROJ      = pll
+PROJ      = bcd
 BUILD     = ./build
 DEVICE    = 1k
 FOOTPRINT = tq144
 
 # Files
-FILES = pll.v
+FILES = top.v
+FILES += bcd_combinational.v
+FILES += add3.v
 FILES += ../lib/scaler.v
+FILES += ../lib/sevensegment.v
 
 .PHONY: all clean burn
 
