@@ -1,14 +1,14 @@
 set_io hwclk 21
 
-set_io SEG_A 112
-set_io SEG_B 113
-set_io SEG_C 114
-set_io SEG_D 115
-set_io SEG_E 116
-set_io SEG_F 117
-set_io SEG_G 118
-set_io SEG_DP 119
+set_io SEGMENT_A 112
+set_io SEGMENT_B 113
+set_io SEGMENT_C 114
+set_io SEGMENT_D 115
+set_io SEGMENT_E 116
+set_io SEGMENT_F 117
+set_io SEGMENT_G 118
+set_io SEGMENT_DP 119
 
-set_io STROBE_UNITS 44
-set_io STROBE_TENS 45
-set_io STROBE_HUNDREDS 47
+set_io ENABLE_UNITS 44
+set_io ENABLE_TENS 45
+set_io ENABLE_HUNDREDS 47
