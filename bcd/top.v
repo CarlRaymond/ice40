@@ -67,7 +67,7 @@ module top (
 	reg[2:0] displayState = START;
 
 	// Digit cycling and blanking
-	always @(displayclk) begin
+	always @(posedge displayclk) begin
 		case(displayState)
 			HUNDREDS: begin
 				activeDigit <= hundreds;

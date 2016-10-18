@@ -1,7 +1,7 @@
-module bcd_combinational(in, units, tens, hunreds);
+module bcd_combinational(in, units, tens, hundreds);
 	input [7:0] in;
 	output [3:0]  units,  tens ;
-	output [1:0] hunreds;
+	output [1:0] hundreds;
 
 	wire [3:0] c1,c2,c3,c4,c5,c6,c7;
 	wire [3:0] d1,d2,d3,d4,d5,d6,d7;
@@ -24,6 +24,6 @@ module bcd_combinational(in, units, tens, hunreds);
 
 	assign units  = {c5 [2:0],in[0]};
 	assign tens = {c7[2:0],c5[3]};
-	assign hunreds = {c6[3],c7[3]};
+	assign hundreds = {c6[3],c7[3]};
 
 endmodule
