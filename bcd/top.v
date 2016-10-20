@@ -2,22 +2,24 @@
 
 module top (
 	input hwclk,
-	output SEGMENT_A, 
-	output SEGMENT_B,
-	output SEGMENT_C,
-	output SEGMENT_D,
-	output SEGMENT_E,
-	output SEGMENT_F,
-	output SEGMENT_G,
-	output SEGMENT_DP,
-	output ENABLE_UNITS,
-	output ENABLE_TENS,
-	output ENABLE_HUNDREDS);
+	output [7:0] counter,
+	output blank,
+	output [6:0] SEGMENTS, // LSB is A, MSB is G
+	output [2:0] ENABLE
+	);
 	
 	// 8-bit counter and clock. This is the data that is displayed
 	// on the output.
 	reg[7:0] counter = 0;
 	wire countclk;
+
+	// Count clock, 1Hz
+	scaler #(.N(6000000)) scaler1 (hwclk, countclk);
+
+	// Counter implementation
+	always @(posedge countclk) begin
+	  counter = counter + 1;
+	end
 
 	// Three BCD digits holding converted counter value
 	wire [3:0] units;
@@ -25,37 +27,30 @@ module top (
 	wire [1:0] hundreds;
 
 	// Actively displayed digit
-	wire [3:0] activeDigit;
+	reg [3:0] activeDigit;
 
 	// 7-segment display output for active digit
-	reg [6:0] segments;
+	wire [6:0] segments;
 	wire displayclk;
 
-	// Ripple-blanking tracking bit. When 1 and current digit
+	// Leading zero tracking bit. When 1 and current digit
 	// is 0, display is blanked.
 	reg blank = 0;
 
-	// Count clock, 1Hz
-	scaler #(.N(12000000)) scaler1 (hwclk, countclk);
-
-	// Display clock, 20KHz
-	scaler #(.N(600)) scaler2 (hwclk, displayclk);
+	// Display multiplexing clock, 20KHz
+	scaler #(.N(300)) scaler2 (hwclk, displayclk);
 
 	// 8-bit binary to 3-digit BCD converter 
 	bcd_combinational bcd (counter, units, tens, hundreds);
 
 	// BCD to 7 segment converter
-	sevensegment display(activeDigit, 0, segments);
-
-	// Counter implementation
-	always @(posedge countclk) begin
-	  counter = counter + 1;
-	end
+	sevensegment display(activeDigit, 0, segments, rbo);
+	wire rbo;
 
 	// Digit enable bits, active high.
 	reg[2:0] enable = 3'b000;
 
-	// State definitions for one-hot digit enable
+	// State definitions for one-hot digit multiplexing
 	parameter[2:0]
 		START = 3'b000,
 		HUNDREDS = 3'b100,
@@ -63,7 +58,8 @@ module top (
 		UNITS = 3'b001
 		;
 
-	// One-hot state cycles (HUNDREDS => TENS => UNITS => HUNDREDS) to display the active digit
+	// One-hot state cycles (HUNDREDS => TENS => UNITS => HUNDREDS)
+	// to multiplex the displayed digit
 	reg[2:0] displayState = START;
 
 	// Digit cycling and blanking
@@ -71,7 +67,7 @@ module top (
 		case(displayState)
 			HUNDREDS: begin
 				activeDigit <= hundreds;
-				if (activeDigit == 0 && blank == 1) begin
+				if (hundreds == 0 && blank == 1) begin
 					// Blank the digit
 					enable <= 0;
 				end
@@ -88,7 +84,7 @@ module top (
 
 			TENS: begin
 				activeDigit <= tens;
-				if (activeDigit == 0 && blank == 1) begin
+				if (tens == 0 && blank == 1) begin
 					// Blank the digit
 					enable <= 0;
 				end
@@ -109,10 +105,10 @@ module top (
 				enable <= displayState;
 
 				// Prepare to blank MSD on next pass
-				blank <= 0;
+				blank <= 1;
 
 				// Move to next digit
-				displayState = HUNDREDS;
+				displayState <= HUNDREDS;
 			end
 
 			default: begin
@@ -126,17 +122,6 @@ module top (
 
 
 	// Assign outputs
-	assign SEGMENT_A = segments[0];
-	assign SEGMENT_B = segments[1];
-	assign SEGMENT_C = segments[2];
-	assign SEGMENT_D = segments[3];
-	assign SEGMENT_E = segments[4];
-	assign SEGMENT_F = segments[5];
-	assign SEGMENT_G = segments[6];
-	assign SEGMENT_DP = 0;
-
-	assign ENABLE_UNITS = enable[0];
-	assign ENABLE_TENS = enable[1];
-	assign ENABLE_HUNDREDS = enable[2];
-
+	assign SEGMENTS = segments;
+	assign ENABLE = enable;
 endmodule

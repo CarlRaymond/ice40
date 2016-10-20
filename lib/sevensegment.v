@@ -1,14 +1,14 @@
-module sevensegment (input[3:0] data, input rbi, output[6:0] segments, output rbo);
-	//input [3:0] data;
-	//input rbi;
-	//output [6:0] segments; // from g to a
-	//output rbo;
+module sevensegment (data, rbi, segments, rbo);
+	input [3:0] data;
+	input rbi;
+	output reg [6:0] segments; // from g to a
+	output reg rbo;
+
 
 	always @* begin
 		if (rbi & data == 4'b0000) begin
 			segments = 7'b0000000;
 			rbo = 1;
-
 		end
 		else begin
 			rbo = 0;

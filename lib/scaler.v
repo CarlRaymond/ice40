@@ -8,7 +8,7 @@ module scaler (input clk_in, output clk_out);
     if (counter == N) 
       begin
         counter <= 0;
-        clk_out = ~clk_out;
+        clk_out <= ~clk_out;
       end
     else 
       counter <= counter + 1;

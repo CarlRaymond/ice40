@@ -2,7 +2,7 @@
 module add3(in, out);
 
 	input [3:0] in;
-	output [3:0] out;
+	output reg [3:0] out;
 	always @ (*) begin
 		case (in)
 			4'b0000: out = 4'b0000;	// 0 => 0

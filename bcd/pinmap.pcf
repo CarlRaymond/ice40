@@ -1,14 +1,13 @@
 set_io hwclk 21
 
-set_io SEGMENT_A 112
-set_io SEGMENT_B 113
-set_io SEGMENT_C 114
-set_io SEGMENT_D 115
-set_io SEGMENT_E 116
-set_io SEGMENT_F 117
-set_io SEGMENT_G 118
-set_io SEGMENT_DP 119
+set_io SEGMENTS[0] 112
+set_io SEGMENTS[1] 113
+set_io SEGMENTS[2] 114
+set_io SEGMENTS[3] 115
+set_io SEGMENTS[4] 116
+set_io SEGMENTS[5] 117
+set_io SEGMENTS[6] 118
 
-set_io ENABLE_UNITS 44
-set_io ENABLE_TENS 45
-set_io ENABLE_HUNDREDS 47
+set_io ENABLE[0] 44
+set_io ENABLE[1] 45
+set_io ENABLE[2] 47
