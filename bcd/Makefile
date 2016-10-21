@@ -8,6 +8,7 @@ FOOTPRINT = tq144
 FILES = top.v
 FILES += bcd_combinational.v
 FILES += add3.v
+FILES += display_multiplexer.v
 FILES += ../lib/scaler.v
 FILES += ../lib/sevensegment.v
 
